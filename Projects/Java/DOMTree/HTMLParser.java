@@ -1,7 +1,8 @@
 /**
 * used http://software.hixie.ch/utilities/js/live-dom-viewer/ for visualisation and
 * https://www.w3.org/TR/html-markup/syntax.html#syntax-attr-single-quoted for definitions.
-*
+* used Some of Professor Diament's code for the Depth first and Breath first search functions
+* A class for parsing a basic HTML string into a DOM tree
 *
 */
 import java.util.regex.Pattern;
@@ -31,6 +32,10 @@ public class HTMLParser{
 	HTMLParser()
 	{
 	}
+	/**
+	* Resets the neccesary feilds, makes a dummy root node, and calls the main parse method on it.
+	* @param docString The String to be parsed
+	*/
 	public void parse(String docString)
 	{
 		this.id = 0;
@@ -38,6 +43,12 @@ public class HTMLParser{
 		rootNode = new HTMLTreeNode(null, "DOMTree");
 		parse(docString, rootNode);
 	}
+	/**
+	* Parses the string recursivly, creating new nodes, moving up the tree
+	* or making new text nodes as neccesary. 
+	* @param docString String to be parsed
+	* @param StartNode Node to start parsing from
+	*/
 	private void parse(String docString, HTMLTreeNode startNode)
 	{
 		if(docString.isEmpty()){
@@ -55,10 +66,22 @@ public class HTMLParser{
 			parse(docString.substring(docString.indexOf("<")), startNode);
 		}
 	}
+	/**
+	* Creates a new Text Node by creating the correct String and calling newNode
+	* @param parent The parent of the new node
+	* @param NodeString The text in the new node
+	* @return The new Node
+	*/
 	private HTMLTreeNode newTextNode(HTMLTreeNode parent, String nodeString)
 	{
 		return newNode(parent, "text content=\"" + nodeString + "\"");
 	}
+	/**
+	* Creates a new Node
+	* @param parent The parent of the new node
+	* @param NodeString A string representing the tag and attributes of the new node
+	* @return The new Node
+	*/
 	private HTMLTreeNode newNode(HTMLTreeNode parent, String nodeString)
 	{
 		int endIndex = indexingMin(nodeString, SPACE);
@@ -67,6 +90,11 @@ public class HTMLParser{
 		assignId(thisNode);
 		return thisNode;
 	}
+	/**
+	* Recursivly parses the attributes string
+	* @param attributes A string representing the attributes of the node
+	* @param node the node that has the attributes
+	*/
 	private static void addAtributes(String attributes, HTMLTreeNode node)
 	{
 		attributes = attributes.trim();
@@ -96,6 +124,10 @@ public class HTMLParser{
 		}
 		addAtributes(attributes.substring(endIndex + adjuster), node);
 	}
+	/**
+	* assigns a unique ID to a node
+	* @param node the node to be assinged an ID
+	*/
 	private void assignId(HTMLTreeNode node)
 	{
 		String nodeId = node.getId();
@@ -138,14 +170,24 @@ public class HTMLParser{
 		}
 		return min;
 	}
+	/**
+	* Preforms a breadth first search on the Tree that has been parsed
+	*/
 	public void breadthFirst()
 	{
 		breadthFirst(rootNode.getChildren().get(0));
 	}
+	/**
+	* Preforms a depth first search on the Tree that has been parsed
+	*/
 	public void depthFirst()
 	{
 		depthFirst(rootNode.getChildren().get(0));
 	}
+	/**
+	* Preforms a breadth first search on the node, printing information about it as it goes
+	* @param node the node to start from
+	*/
 	public static void breadthFirst(HTMLTreeNode node)
 	{
 		LinkedBlockingQueue<HTMLTreeNode> queue = new LinkedBlockingQueue<>();
@@ -158,6 +200,10 @@ public class HTMLParser{
 			}
 		}
 	}
+	/**
+	* Preforms a depth first search on the node, printing information about it as it goes
+	* @param node the node to start from
+	*/
 	private static void depthFirst(HTMLTreeNode tree)
 	{
 		visitNode(tree);
@@ -166,6 +212,10 @@ public class HTMLParser{
 			depthFirst(node);
 		}
 	}
+	/**
+	* Prints information about a node
+	* @param node the node to print information about
+	*/
 	private static void visitNode(HTMLTreeNode node)
 	{
 		System.out.println("\nid: " + node.getId());
