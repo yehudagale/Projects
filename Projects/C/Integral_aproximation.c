@@ -59,5 +59,6 @@ double simp (double (*f)(double),double start, double end, int times)
 //the function to be aproximated
 double f(double (x))
 {
+	//replace this with your function:
 	return 2 * x;
 }
