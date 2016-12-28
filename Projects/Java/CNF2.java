@@ -196,7 +196,7 @@ public class CNF2 {
 						remove side procedure on set 1
 				ii.set 2 is compatible with the first one
 					DO:
-						special remove side (make the old clause the main one)
+						special remove side (make the old insert clause the main one)
 	
 	if 1 or 2.
 		DO:remove clause from maps
@@ -206,16 +206,48 @@ public class CNF2 {
 	*/
 	private boolean insert(Clause bigClause, Clause toInsert)
 	{
+		//since I don't know which variables go in which clause, I pick at random...
 		int side1 = 0;
-		int side2 = ;
+		int side2 = 2;
 		String var1 = toInsert[whichSet[0]].iterator().next();
 		String var2 = toInsert[2 + whichSet[1]].iterator().next();
-		boolean var1Value;
-		boolean var2Value;
+		boolean[] varValues;
+		//then I check if I picked right
+		Set<String> set = bigClause.getAllVars(); 
+		if (!set.contains(var1)) {
+			if (set.contains(var2)) {
+				String temp = var1;
+				var1 = var2;
+				var2 = temp;
+				toInsert.reverse();
+			}
+			else{
+				return true;
+			}
+		}
+		if(!bigClause.sets[side1].contains(var1) && !bigClause.sets[side1 + 1].contains(var1))
+		{
+			side1 = 2;
+			side2 = 0;
+		}
+		varValues = whichSetConverter(toInsert);
+		if(automaticallySatisfies(bigClause, var1, varValues[0], side1))
+		{
+			if (automaticallySatisfies(bigClause, var2, varValues[1], side2)) {
+				
+			}
+			else if (isCompatible(bigClause, var2, varValues[1], side2)) {
+				bigClause.sets[toInsert.whichSet[1] + side2]
+			}
+		}
 	}
-	private boolean[] checkSuitability(Clause clause, String var, int side)
+	private boolean[] whichSetConverter(Clause clause)
 	{
-		if (clause.sets[side.contains(var)])
+		ret = new boolean[2];
+		for (int i = 0; i <= 2; i++) {
+			ret[i] = clause.whichSet[i] == 0;
+		}
+		return ret;
 	}
 	private boolean automaticallySatisfies(Clause clause, String var, boolean varValue, int side)
 	{
@@ -325,6 +357,19 @@ public class CNF2 {
 				}
 			}
 			return -1;
+		}
+		public void reverse()
+		{
+			HashSet<String> tempSet = new HashSet<String>(trueSet1);
+			trueSet1 = trueSet2;
+			trueSet2 = tempSet;
+			tempSet = falseSet1;
+			falseSet1 = falseSet2;
+			falseSet2 = tempSet;
+			sets = new HashSet[]{trueSet1, falseSet1, trueSet2, falseSet2};
+			tempInt = whichSet[0];
+			whichSet[0] = whichSet[1];
+			whichSet[1] = tempInt;
 		}
 		public Set<String> getAllVars()
 		{
